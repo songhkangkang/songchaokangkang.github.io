@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+       *{
+       	margin:0;
+       	padding: 0;
+       }
+        .all{
+           width: 700px;
+           height: 403px;
+           /*padding: 5px;*/
+           position: relative;
+           border: 1px solid #ccc;
+           margin: 100px auto;
+			overflow: hidden;
+        }
+      .all img{
+        	width:100%;
+        
+        }
+      a{
+      	display: block;
+      }
+      .ad{
+      	width:700px;
+      	height: 403px;
+      	position: relative;
+      }
+       .ad ul{
+        width: 1000%;
+       	list-style: none;
+       	position: absolute;
+        top: 0;
+       	left: 0;
+       	
+       	
+       }
+      .ad ul li{
+      	width: 700px;
+      	height: 403px;
+      	overflow:hidden;
+      	float: left;
+      }
+       .ad ul li .current{
+       	background: yellow;
+       }
+       .ad ol{
+		   width:215px;
+		   height: 30px;
+		   background:rgba(0,0,0,0.3);
+           position: absolute;
+           left:50%;
+		   margin-left:-107.5px;
+		   border-radius: 10px;
+		   list-style: none;
+           bottom: 10px;
+           line-height: 30px;
+		   text-align: center;
+       }
+		.ad ol li{
+			float: left;
+			width: 30px;
+			height: 30px;
+			margin-left: 5px;
+			font-weight: bold;
+			border-radius: 50%;
+			background-color: #ffffff;
+			cursor: pointer;
+		}
+	   .ad ol li.current{
+		   background-color:red;
+		   color: #ffffff;
+	   }
+		#arr{
+			/*display: none;*/
+		}
+		#arr span{
+			width: 40px;
+			height: 60px;
+			line-height: 60px;
+			font-size: 35px;
+			position: absolute;
+			top: 50%;
+			margin-top: -30px;
+			background:rgba(205,205,205,0.5);
+			cursor: pointer;
+			text-align: center;
+			font-weight: bold;
+			font-family:sans-serif;
+
+		}
+		#lbright{
+			right:0px;
+		}
+	</style>
+</head>
+<body>
+<div id="box" class="all">
+	<div class="ad">
+		<ul id="imgs">
+			<li><a href="javascript:"><img src="images/8.jpg" alt=""></a></li>
+			<li><a href="javascript:"><img src="images/1.jpg" alt=""></a></li>
+			<li><a href="javascript:"><img src="images/3.jpg" alt=""></a></li>
+			<li><a href="javascript:"><img src="images/20.jpg" alt=""></a></li>
+			<li><a href="javascript:"><img src="images/18.jpg" alt=""></a></li>
+			<li><a href="javascript:"><img src="images/15.jpg" alt=""></a></li>
+		</ul>
+		<ol>
+		</ol>
+	</div>
+	<div id="arr">
+		<span id="lbleft">&lt;</span>
+		<span id="lbright">&gt;</span>
+	</div>
+</div>
+<script>
+	//1.获取对象
+	var box = document.getElementById("box");
+	var ad = box.children[0];
+	var ul = document.getElementById("imgs");
+	var lis = ul.children;
+	var ol = ad.children[1];
+	var arr = document.getElementById("arr");
+	var lbLeft = document.getElementById("lbleft");
+	var lbright = document.getElementById("lbright");
+	var width = ad.offsetWidth; //获取图片的宽度
+//	var timId = null;
+	//2.动态创建小圆点
+	for (var i = 0; i < lis.length; i++) {
+	var li = document.createElement("li");
+		li.innerHTML = i+1;
+		ol.appendChild(li); //将动态创建的li标签插入ol中
+	}
+	//3.拿到所有的小圆点
+	var olLis =ol.children;
+	olLis[0].setAttribute("class", "current"); //给第一个圆点设置带有背景颜色的类
+	for (var i = 0; i < olLis.length; i++) {  //遍历所有的圆点li标签
+		olLis[i].setAttribute("index", i);  //给所有li标签添加自定义索引值
+		olLis[i].onmouseover = function () { //给所有圆点li标签注册鼠标移入事件
+			for (var j = 0; j < olLis.length; j++) {  //这是循环是为了当鼠标移入当前li标签时其他li标签的背景色恢复正常
+				olLis[j].removeAttribute("class");
+			}
+			this.setAttribute("class", "current"); //当鼠标移入当前li标签的时候让添加拥有背景颜色的类
+
+
+
+
+
+			var index = this.getAttribute("index"); //申请一个变量把鼠标每次悬停在当前li标签时的自定义索引拿到
+			pix = index1 = index;
+			var target = -width * index;  //目标位置的距离就等于图片的宽度乘上当前的图片的索引值
+			animent(ul, target);   //将移动的对象和目标位置传入一个封装好的匀速移动的函数
+		}
+	}
+	//4.给大盒子注册一个鼠标移入事件
+	box.onmouseover = function () {
+		arr.style.display = "block";//鼠标移入大盒子时让左右箭头的盒子显示出来
+	     clearInterval(timeId); // 清除定时器让图片不再自动移动
+	};
+	//5.给大盒子注册鼠标移出事件
+	box.onmouseout = function () {
+		arr.style.display = "none";//鼠标离开大盒子的时候让左右箭头盒子隐藏起来
+		timeId = setInterval(playNext,1300); //
+	};
+	ul.appendChild(lis[0].cloneNode(true)); //克隆第一张图片追加到移动的对象的后面
+	var pix = 0; //申请一个变量作为移动图片的张数
+	var index1 = 0; //申请一个变量
+	//给右边按钮注册点击事件
+	lbright.onclick = function () {
+		playNext();
+	};
+	function playNext(){
+		if (pix == lis.length - 1) {  //移动图片的张数等于li标签的个数
+			pix = 0;  //就让图片的张数恢复成第一张
+			ul.style.left = "0px"; //让移动的对象恢复到原来的位置
+		}
+		pix++;  //每次点击就会加1刚好是移动图片的张数
+		var target = -width * pix;  //移动的目标的距离就是当前图片的宽度乘以移动过的张数
+		animent(ul, target);   //把要移动目标的距离传授匀速运动的函数中
+		if (index1 < olLis.length - 1) {
+			index1++;
+		} else {
+			index1 = 0;
+		}
+		for(var i = 0;i< olLis.length;i++){
+			olLis[i].removeAttribute("class");
+		}
+		olLis[index1].setAttribute("class","current");
+	}
+    //给左边按钮注册点击事件
+	lbleft.onclick = function () {
+		if (pix == 0) {  //当前移动图片的张数的索引等于第一张的索引的时候
+			pix = lis.length - 1; //就让移动的图片索引等于最后一张的索引由于克隆了一张所以减去1
+			ul.style.left = -width * (lis.length - 1) + "px"; //移动的对象要移动的距离就等于自身的宽度所以就显示了最后一张图片
+		}
+		pix--; //然后每移动一张就把图片的张数减1
+		var target = -width * pix; //每次移动目标的距离就等于一张图片的宽度乘上当前的索引
+		animent(ul,target);  //把目标距离传入函数中
+
+		//让小圆点的背景颜色和按钮点击时一致
+		if (index1 > 0) {
+			index1--;
+		} else {
+			index1 = olLis.length - 1;
+		}
+		for (var i = 0; i < olLis.length; i++) {
+			olLis[i].removeAttribute("class");
+		}
+		olLis[index1].setAttribute("class", "current");
+	};
+	//自动轮播
+	timeId= setInterval(playNext,1300);
+
+	function animent(obj,target){ //声明一个函数把要移动的对象跟要到达的目标距离传入进来
+		clearInterval(obj.timeId); //在开启定时器之前先清除定时器是为了不多开定时器
+		obj.timeId = setInterval(function(){  //设置一个定时器传入一个匀速移动的函数
+			var leader = obj.offsetLeft; //先获取当前的距离
+			var step = 20;  //设置步长
+			step = leader < target?step:-step; //目标距离有正有负，所以步长也要有正有负
+			if(Math.abs(target-leader) > Math.abs(step)){ //判断当前位置距离和目标位置的距离有没有一个步长那么大
+				leader= leader+step; //当前位置的距离加上步长就等于移动后新的位置的距离
+				obj.style.left=leader+"px";  //让移动对象的位置等于这个移动后新的位置的距离就可以匀速的进行移动
+			}else{
+				clearInterval(obj.timeId); //当前对象到达了目标位置就要清除定时器
+				obj.style.left = target+"px"; //如果当前位置到目标位置不足一个步长就让对象直接跳到目标位置即可
+			}
+		},15);
+	}
+
+
+
+</script>
+</body>
+</html>
